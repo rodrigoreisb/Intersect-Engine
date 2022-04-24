@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -119,24 +119,19 @@ namespace Intersect.Updater
                             File.ReadAllText(mCurrentVersionPath)
                         );
 
-
                         updateRequired = false;
-                        foreach (var file in mUpdate.Files.Where(f => f.ClientIgnore == false))
+                        foreach (var file in mUpdate.Files.Where(f => !(mIsClient ? f.ClientIgnore : f.EditorIgnore)))
                         {
-                            var checkFile = mCachedVersion.Files.FirstOrDefault(f => f.Path == file.Path);
+                            var checkFile = mCachedVersion.Files.FirstOrDefault(f => string.Equals(file.Path, f.Path, StringComparison.Ordinal));
                             if (checkFile == null || checkFile.Size != file.Size || checkFile.Hash != file.Hash)
                             {
                                 updateRequired = true;
                             }
-                            else
+                            else if (!File.Exists(file.Path) || !mUpdate.TrustCache)
                             {
-                                if (!File.Exists(file.Path) || !mUpdate.TrustCache)
-                                {
-                                    updateRequired = true;
-                                }
+                                updateRequired = true;
                             }
                         }
-
                     }
 
                     //If we are doing a forced full check or if we don't have a current version file then we will start from scratch
@@ -297,7 +292,7 @@ namespace Intersect.Updater
             File.WriteAllText(
                 mCurrentVersionPath,
                 JsonConvert.SerializeObject(
-                    mCurrentVersion, Formatting.Indented,
+                    mCurrentVersion.Filter(mIsClient), Formatting.Indented,
                     new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore }
                 )
             );
