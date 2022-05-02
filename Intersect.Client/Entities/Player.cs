@@ -82,6 +82,13 @@ namespace Intersect.Client.Entities
         private Dictionary<int, long> mLastHotbarUseTime = new Dictionary<int, long>();
         private int mHotbarUseDelay = 150;
 
+        //editado por rodrigo
+        public int multi_mouse_move_count = 0;
+        public int multi_mouse_move_direction = -1;
+        public bool multi_mouse_move_active = false;
+
+        private int mouse_move_command = -10;
+
         /// <summary>
         /// Name of our guild if we are in one.
         /// </summary>
@@ -880,31 +887,40 @@ namespace Intersect.Client.Entities
         }
 
         //Input Handling
-        private void HandleInput()
+        public void HandleInput(int optional_cmd = -10)
         {
             var movex = 0f;
             var movey = 0f;
+
+            //editado por rodrigo
+            if (optional_cmd != -10)
+            {
+                //movex = 1;
+            }
+            //end editado por rodrigo
+
             if (Interface.Interface.HasInputFocus())
             {
                 return;
             }
 
-            if (Controls.KeyDown(Control.MoveUp))
+            if (Controls.KeyDown(Control.MoveUp) || optional_cmd == 0 )
             {
                 movey = 1;
             }
 
-            if (Controls.KeyDown(Control.MoveDown))
+            if (
+                Controls.KeyDown(Control.MoveDown) || optional_cmd == 2 )
             {
                 movey = -1;
             }
 
-            if (Controls.KeyDown(Control.MoveLeft))
+            if (Controls.KeyDown(Control.MoveLeft) || optional_cmd == 1 )
             {
                 movex = -1;
             }
 
-            if (Controls.KeyDown(Control.MoveRight))
+            if (Controls.KeyDown(Control.MoveRight) || optional_cmd == 3 )
             {
                 movex = 1;
             }
@@ -932,6 +948,7 @@ namespace Intersect.Client.Entities
                 {
                     Globals.Me.MoveDir = 3;
                 }
+                mouse_move_command = Globals.Me.MoveDir;
             }
 
             var castInput = -1;
@@ -1633,7 +1650,7 @@ namespace Intersect.Client.Entities
         }
 
         //Movement Processing
-        private void ProcessDirectionalInput()
+        public void ProcessDirectionalInput()
         {
             //Check if player is crafting
             if (Globals.InCraft == true)
@@ -1666,6 +1683,17 @@ namespace Intersect.Client.Entities
             var tmpX = (sbyte) X;
             var tmpY = (sbyte) Y;
             Entity blockedBy = null;
+
+            if (mouse_move_command > -10)
+            {
+                Globals.Me.MoveDir = mouse_move_command;
+                mouse_move_command = -10;
+            }
+
+            if (Globals.Me.MoveDir > -1)
+            {
+                var i = 1;
+            }
 
             if (MoveDir > -1 && Globals.EventDialogs.Count == 0)
             {
@@ -1782,6 +1810,16 @@ namespace Intersect.Client.Entities
                         TryToChangeDimension();
                         PacketSender.SendMove();
                         MoveTimer = (Timing.Global.Ticks / TimeSpan.TicksPerMillisecond) + (long)GetMovementTime();
+                        //editado por rodrigo
+                        if(multi_mouse_move_active == true && multi_mouse_move_count > 0)
+                        {
+                            HandleInput(multi_mouse_move_direction);
+                            multi_mouse_move_count--;
+                            if(multi_mouse_move_count < 1) 
+                                {
+                                    multi_mouse_move_active = false; 
+                                }
+                        }
                     }
                     else
                     {
