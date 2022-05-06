@@ -228,7 +228,10 @@ namespace Intersect.Client.MonoGame
                     {
                         lock (Globals.GameLock)
                         {
+                            Globals.WindowLeft = (int)Window.Position.X;
+                            Globals.WindowTop = (int)Window.Position.Y;
                             Main.Update();
+                            
                         }
 
                         ///mLastUpdateTime = gameTime.TotalGameTime.TotalMilliseconds + (1000/60f);

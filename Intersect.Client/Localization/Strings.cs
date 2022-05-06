@@ -506,6 +506,8 @@ namespace Intersect.Client.Localization
 
             public static LocalizedString stat4 = @"Speed";
 
+            public static LocalizedString stat5 = @"Vitality";
+
             public static LocalizedString targetoutsiderange = @"Target too far away!";
 
             public static LocalizedString vital0 = @"Health";

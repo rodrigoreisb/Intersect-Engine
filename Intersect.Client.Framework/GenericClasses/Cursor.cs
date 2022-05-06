@@ -3,12 +3,16 @@
 
     public class Cursor
     {
+        public int cursor_position_x = 0;
+
+        public int cursor_position_y = 0;
 
         private int mType = 0;
 
         public Cursor()
         {
-        }
+
+    }
 
         public Cursor(Cursors.CursorTypes t)
         {
@@ -38,7 +42,6 @@
             SizeNesw,
 
             No
-
         }
 
         public static Cursor Default => new Cursor(CursorTypes.Default);

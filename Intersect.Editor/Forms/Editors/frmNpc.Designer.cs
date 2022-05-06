@@ -164,6 +164,7 @@ namespace Intersect.Editor.Forms.Editors
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripItemUndo = new System.Windows.Forms.ToolStripButton();
             this.searchableDarkTreeView1 = new Intersect.Editor.Forms.Controls.SearchableDarkTreeView();
+            this.chkIsSummon = new DarkUI.Controls.DarkCheckBox();
             this.grpNpcs.SuspendLayout();
             this.grpGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRgbaA)).BeginInit();
@@ -869,6 +870,7 @@ namespace Intersect.Editor.Forms.Editors
             // pnlContainer
             // 
             this.pnlContainer.AutoScroll = true;
+            this.pnlContainer.Controls.Add(this.chkIsSummon);
             this.pnlContainer.Controls.Add(this.grpCombat);
             this.pnlContainer.Controls.Add(this.grpCommonEvents);
             this.pnlContainer.Controls.Add(this.grpBehavior);
@@ -2079,6 +2081,15 @@ namespace Intersect.Editor.Forms.Editors
             this.searchableDarkTreeView1.TabIndex = 46;
             this.searchableDarkTreeView1.Visible = false;
             // 
+            // chkIsSummon
+            // 
+            this.chkIsSummon.AutoSize = true;
+            this.chkIsSummon.Location = new System.Drawing.Point(11, 1086);
+            this.chkIsSummon.Name = "chkIsSummon";
+            this.chkIsSummon.Size = new System.Drawing.Size(84, 17);
+            this.chkIsSummon.TabIndex = 33;
+            this.chkIsSummon.Text = "Is Summon?";
+            // 
             // FrmNpc
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2125,6 +2136,7 @@ namespace Intersect.Editor.Forms.Editors
             ((System.ComponentModel.ISupportInitialize)(this.nudMag)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudStr)).EndInit();
             this.pnlContainer.ResumeLayout(false);
+            this.pnlContainer.PerformLayout();
             this.grpCombat.ResumeLayout(false);
             this.grpCombat.PerformLayout();
             this.grpAttackSpeed.ResumeLayout(false);
@@ -2292,5 +2304,6 @@ namespace Intersect.Editor.Forms.Editors
         private System.Windows.Forms.Label lblResetRadius;
         private DarkCheckBox chkIndividualLoot;
         private Controls.GameObjectList lstGameObjects;
+        private DarkCheckBox chkIsSummon;
     }
 }

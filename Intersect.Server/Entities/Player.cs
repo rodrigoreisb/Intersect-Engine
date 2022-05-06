@@ -884,6 +884,13 @@ namespace Intersect.Server.Entities
 
             var baseVital = classVital;
 
+            if (vital == (int)Vitals.Health)
+            {
+                int[] stat_values = GetStatValues();
+                int stat_vitality = stat_values[5];
+                classVital = classVital + stat_vitality; //<---------- vitality add
+            }
+
             // TODO: Alternate implementation for the loop
             //            classVital += Equipment?.Select(equipment => ItemBase.Get(Items.ElementAt(equipment)?.ItemId ?? Guid.Empty))
             //                .Sum(
@@ -1470,6 +1477,7 @@ namespace Intersect.Server.Entities
                     }
 
                     BaseStats[i] = s;
+
                 }
 
                 //Handle Changes in Points

@@ -56,7 +56,12 @@ namespace Intersect.Server.Entities
             } 
         }
 
+
         public bool Despawnable;
+
+      //  public bool is_summon;
+
+       // public Guid summoner_player;
 
         //Moving
         public long LastRandomMove;
@@ -109,6 +114,13 @@ namespace Intersect.Server.Entities
             Color = myBase.Color;
             Level = myBase.Level;
             Base = myBase;
+
+            
+               this.is_entity_summon = Base.Is_Summon;
+ 
+               
+            
+            
             Despawnable = despawnable;
 
             for (var i = 0; i < (int) Stats.StatCount; i++)
@@ -182,6 +194,7 @@ namespace Intersect.Server.Entities
         //Targeting
         public void AssignTarget(Entity en)
         {
+
             var oldTarget = Target;
 
             // Are we resetting? If so, do not allow for a new target.
@@ -242,7 +255,11 @@ namespace Intersect.Server.Entities
                         //TODO Make sure that the npc can target the player
                         if (this != en && !TargetHasStealth(en))
                         {
-                            Target = en;
+                            if (this.is_entity_summon != true && en.Id != summoner_player_entity.Id )
+                            {
+                                Target = en;
+                            }
+                            
                         }
                     }
                     else
@@ -1293,6 +1310,7 @@ namespace Intersect.Server.Entities
 
         public bool ShouldAttackPlayerOnSight(Player en)
         {
+
             if (IsAllyOf(en))
             {
                 return false;
@@ -1603,7 +1621,7 @@ namespace Intersect.Server.Entities
 
             var pkt = (NpcEntityPacket) packet;
             pkt.Aggression = GetAggression(forPlayer);
-
+            
             return pkt;
         }
 

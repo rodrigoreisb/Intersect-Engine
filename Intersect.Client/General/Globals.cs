@@ -18,6 +18,8 @@ namespace Intersect.Client.General
 
     public static class Globals
     {
+        public static int WindowLeft;
+        public static int WindowTop;
 
         //Only need 1 table, and that is the one we see at a given moment in time.
         public static CraftingTableBase ActiveCraftingTable;

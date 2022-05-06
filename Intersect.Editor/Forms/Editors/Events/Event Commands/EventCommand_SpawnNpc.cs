@@ -172,9 +172,9 @@ namespace Intersect.Editor.Forms.Editors.Events.Event_Commands
                 case 0: //Tile Spawn
                     mMyCommand.EntityId = Guid.Empty;
                     mMyCommand.MapId = MapList.OrderedMaps[cmbMap.SelectedIndex].MapId;
-                    mMyCommand.X = (sbyte) nudWarpX.Value;
-                    mMyCommand.Y = (sbyte) nudWarpY.Value;
-                    mMyCommand.Dir = (byte) cmbDirection.SelectedIndex;
+                    mMyCommand.X = (sbyte)nudWarpX.Value;
+                    mMyCommand.Y = (sbyte)nudWarpY.Value;
+                    mMyCommand.Dir = (byte)cmbDirection.SelectedIndex;
 
                     break;
                 case 1: //On/Around Entity Spawn
@@ -188,9 +188,9 @@ namespace Intersect.Editor.Forms.Editors.Events.Event_Commands
                         mMyCommand.EntityId = mCurrentMap.LocalEvents.Keys.ToList()[cmbEntities.SelectedIndex - 1];
                     }
 
-                    mMyCommand.X = (sbyte) mSpawnX;
-                    mMyCommand.Y = (sbyte) mSpawnY;
-                    mMyCommand.Dir = (byte) Convert.ToInt32(chkDirRelative.Checked);
+                    mMyCommand.X = (sbyte)mSpawnX;
+                    mMyCommand.Y = (sbyte)mSpawnY;
+                    mMyCommand.Dir = (byte)Convert.ToInt32(chkDirRelative.Checked);
 
                     break;
             }
@@ -212,7 +212,7 @@ namespace Intersect.Editor.Forms.Editors.Events.Event_Commands
         {
             var frmWarpSelection = new FrmWarpSelection();
             frmWarpSelection.SelectTile(
-                MapList.OrderedMaps[cmbMap.SelectedIndex].MapId, (int) nudWarpX.Value, (int) nudWarpY.Value
+                MapList.OrderedMaps[cmbMap.SelectedIndex].MapId, (int)nudWarpX.Value, (int)nudWarpY.Value
             );
 
             frmWarpSelection.ShowDialog();
@@ -237,12 +237,12 @@ namespace Intersect.Editor.Forms.Editors.Events.Event_Commands
         {
             if (e.X >= 0 && e.Y >= 0 && e.X < pnlSpawnLoc.Width && e.Y < pnlSpawnLoc.Height)
             {
-                mSpawnX = (int) Math.Floor((double) e.X / Options.TileWidth) - 2;
-                mSpawnY = (int) Math.Floor((double) e.Y / Options.TileHeight) - 2;
+                mSpawnX = (int)Math.Floor((double)e.X / Options.TileWidth) - 2;
+                mSpawnY = (int)Math.Floor((double)e.Y / Options.TileHeight) - 2;
                 UpdateSpawnPreview();
             }
         }
 
     }
 
-}
+}    

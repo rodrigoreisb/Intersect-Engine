@@ -832,9 +832,16 @@ namespace Intersect.Server.Entities.Events
             if (tile.TryFix())
             {
                 var npc = MapInstance.Get(mapId).SpawnNpc((byte) tileX, (byte) tileY, direction, npcId, true);
+                //by rodrigo. summon type npc. for testing. remove after creating own summon command event
+                if (npc.is_entity_summon == true)
+                {
+                    //npc.is_entity_summon = true;
+                    npc.summoner_player_entity = player;
+                }
                 player.SpawnedNpcs.Add((Npc) npc);
             }
         }
+
 
         //Despawn Npcs Command
         private static void ProcessCommand(

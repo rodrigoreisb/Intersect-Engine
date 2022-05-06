@@ -57,7 +57,7 @@ namespace Intersect.Client.MonoGame.Graphics
 
         private Game mGame;
 
-        private GameWindow mGameWindow;
+        public GameWindow mGameWindow;
 
         private GraphicsDeviceManager mGraphics;
 
@@ -88,6 +88,7 @@ namespace Intersect.Client.MonoGame.Graphics
         private List<string> mValidVideoModes;
 
         private GameRenderTexture mWhiteTexture;
+
 
         public MonoRenderer(GraphicsDeviceManager graphics, ContentManager contentManager, Game monoGame)
         {
@@ -251,7 +252,7 @@ namespace Intersect.Client.MonoGame.Graphics
         {
             return new Pointf(
                 mGraphics.PreferredBackBufferWidth / (float) mGameWindow.ClientBounds.Width,
-                mGraphics.PreferredBackBufferHeight / (float) mGameWindow.ClientBounds.Height
+                mGraphics.PreferredBackBufferHeight / (float) mGameWindow.ClientBounds.Height 
             );
         }
 

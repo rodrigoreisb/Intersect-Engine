@@ -1039,6 +1039,7 @@ namespace Intersect.Editor.Forms.Editors.Events
             treeNode65});
             this.lstCommands.Size = new System.Drawing.Size(445, 440);
             this.lstCommands.TabIndex = 2;
+            this.lstCommands.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.lstCommands_AfterSelect);
             this.lstCommands.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.lstCommands_NodeMouseDoubleClick);
             // 
             // grpEventCommands

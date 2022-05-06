@@ -20,7 +20,7 @@
     <AssemblyName>Intersect Editor</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
@@ -663,6 +663,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Editors\Events\Event Commands\EventCommand_ConditionalBranch.resx">
       <DependentUpon>EventCommand_ConditionalBranch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Editors\Events\Event Commands\EventCommand_SpawnNpc.resx">
+      <DependentUpon>EventCommand_SpawnNpc.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Shaders\radialgradient_editor.xnb" />
   </ItemGroup>

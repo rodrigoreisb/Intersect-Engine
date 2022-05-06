@@ -14,6 +14,8 @@ namespace Intersect.Enums
 
         Speed,
 
+        Vitality,
+
         StatCount
 
     }

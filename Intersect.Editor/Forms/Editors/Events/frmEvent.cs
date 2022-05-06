@@ -646,7 +646,6 @@ namespace Intersect.Editor.Forms.Editors.Events
                     break;
                 case EventCommandType.SpawnNpc:
                     tmpCommand = new SpawnNpcCommand();
-
                     break;
                 case EventCommandType.PlayAnimation:
                     tmpCommand = new PlayAnimationCommand();
@@ -1263,7 +1262,6 @@ namespace Intersect.Editor.Forms.Editors.Events
                     break;
                 case EventCommandType.SpawnNpc:
                     cmdWindow = new EventCommandSpawnNpc(this, mCurrentMap, MyEvent, (SpawnNpcCommand) command);
-
                     break;
                 case EventCommandType.DespawnNpc:
                     break;
@@ -1872,6 +1870,11 @@ namespace Intersect.Editor.Forms.Editors.Events
         }
 
         #endregion
+
+        private void lstCommands_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
     }
 
     public class CommandListProperties

@@ -57,10 +57,16 @@ namespace Intersect.Client.Interface.Game.Character
 
         Label mMagicRstLabel;
 
+        //rodrigo
+        Label mAddVitalityLabel;
+        Button mAddVitalityBtn;
+        // ends
+
         Label mPointsLabel;
 
         Label mSpeedLabel;
 
+        
         public ImagePanel[] PaperdollPanels;
 
         public string[] PaperdollTextures;
@@ -102,7 +108,6 @@ namespace Intersect.Client.Interface.Game.Character
             statsLabel.SetText(Strings.Character.stats);
 
             mAttackLabel = new Label(mCharacterWindow, "AttackLabel");
-
             mAddAttackBtn = new Button(mCharacterWindow, "IncreaseAttackButton");
             mAddAttackBtn.Clicked += _addAttackBtn_Clicked;
 
@@ -122,6 +127,13 @@ namespace Intersect.Client.Interface.Game.Character
             mAddMagicResistBtn = new Button(mCharacterWindow, "IncreaseMagicResistButton");
             mAddMagicResistBtn.Clicked += _addMagicResistBtn_Clicked;
 
+            //rodrigo
+
+            mAddVitalityLabel = new Label(mCharacterWindow, "VitalityLabel");
+            mAddVitalityBtn = new Button(mCharacterWindow, "IncreaseVitalityButton");
+            mAddVitalityBtn.Clicked += _addVitalityBtn_Clicked;
+
+            //ends
             mPointsLabel = new Label(mCharacterWindow, "PointsLabel");
 
             for (var i = 0; i < Options.EquipmentSlots.Count; i++)
@@ -159,6 +171,12 @@ namespace Intersect.Client.Interface.Game.Character
         {
             PacketSender.SendUpgradeStat((int) Stats.Attack);
         }
+        //rodrigo
+        void _addVitalityBtn_Clicked(Base sender, ClickedEventArgs arguments)
+        {
+            PacketSender.SendUpgradeStat((int)Stats.Vitality);
+        }
+        //ends
 
         //Methods
         public void Update()
@@ -300,6 +318,12 @@ namespace Intersect.Client.Interface.Game.Character
                 Strings.Character.stat3.ToString(Strings.Combat.stat3, Globals.Me.Stat[(int) Stats.MagicResist])
             );
 
+            //rodrigo
+             mAddVitalityLabel.SetText(
+                Strings.Character.stat3.ToString(Strings.Combat.stat5, Globals.Me.Stat[(int)Stats.Vitality])
+            );
+            //end
+
             mPointsLabel.SetText(Strings.Character.points.ToString(Globals.Me.StatPoints));
             mAddAbilityPwrBtn.IsHidden = Globals.Me.StatPoints == 0 ||
                                          Globals.Me.Stat[(int) Stats.AbilityPower] == Options.MaxStatValue;
@@ -315,6 +339,9 @@ namespace Intersect.Client.Interface.Game.Character
 
             mAddSpeedBtn.IsHidden =
                 Globals.Me.StatPoints == 0 || Globals.Me.Stat[(int) Stats.Speed] == Options.MaxStatValue;
+
+            mAddVitalityBtn.IsHidden =
+                Globals.Me.StatPoints == 0 || Globals.Me.Stat[(int)Stats.Vitality] == Options.MaxStatValue;
 
             for (var i = 0; i < Options.EquipmentSlots.Count; i++)
             {

@@ -994,6 +994,7 @@ namespace Intersect.Server.Networking
                 //Search for command activated events and run them
                 foreach (var evt in EventBase.Lookup)
                 {
+                    Log.Error(null, $"{evt.Key} : {evt.Value} blz"  ); // <---- remover depois (rodrigo)
                     if ((EventBase) evt.Value != null)
                     {
                         if (client.Entity.StartCommonEvent(
@@ -1001,6 +1002,7 @@ namespace Intersect.Server.Networking
                             ) ==
                             true)
                         {
+                            
                             return; //Found our /command, exit now :)
                         }
                     }

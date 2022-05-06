@@ -33,6 +33,13 @@ namespace Intersect.Server.Entities
         //Instance Values
         private Guid _id;
 
+        /// <summary>
+        /// ///// edited by rodrigo. controls if an entity was summoned by another entity
+        /// </summary>
+        public bool is_entity_summon = false; //<---- tells us if the entity is a summon
+        public Player summoner_player_entity;
+        ///// edited by rodrigo ends
+///
         [JsonProperty("MaxVitals"), NotMapped] private int[] _maxVital = new int[(int) Vitals.VitalCount];
 
         [NotMapped, JsonIgnore] public Stat[] Stat = new Stat[(int) Stats.StatCount];
@@ -77,7 +84,7 @@ namespace Intersect.Server.Entities
 
         public int Dir { get; set; }
 
-        public string Sprite { get; set; }
+        public string Sprite { get; set; } //<-- in the server, the sprite value in entity class
 
         /// <summary>
         /// The database compatible version of <see cref="Color"/>
@@ -1919,8 +1926,28 @@ namespace Intersect.Server.Entities
             }
         }
 
+        // important for summon pet / monster helper processing
         public virtual void KilledEntity(Entity entity)
         {
+
+            PacketSender.SendChatBubble(this.Id, this.GetEntityType(), "npc killed.", this.MapId);
+
+            //here is a copy of server/Player.cs function KilledEntity
+            switch (entity)
+            {
+                case Npc npc:
+                    {
+                        //only if npc is summoned
+                        if ( this.is_entity_summon == true)
+                        {
+                            
+                            this.summoner_player_entity.KilledEntity(entity);
+                        }
+                        break;
+                    }
+
+            }
+            //ends
         }
 
         public bool CanCastSpell(Guid spellId, Entity target)
@@ -2429,7 +2456,7 @@ namespace Intersect.Server.Entities
             return false;
         }
 
-        //Spawning/Dying
+        
         public virtual void Die(bool dropItems = true, Entity killer = null)
         {
             if (IsDead() || Items == null)
@@ -2647,7 +2674,13 @@ namespace Intersect.Server.Entities
             packet.NameColor = NameColor;
             packet.HeaderLabel = new LabelPacket(HeaderLabel.Text, HeaderLabel.Color);
             packet.FooterLabel = new LabelPacket(FooterLabel.Text, FooterLabel.Color);
+            
 
+            //by rodrigo
+            //recalculates the max vitals based on the Vitality stat
+
+            packet.MaxVital[0] = packet.Vital[0] + packet.Stats[5];
+            //end
             return packet;
         }
 

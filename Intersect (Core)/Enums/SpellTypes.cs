@@ -14,6 +14,10 @@ namespace Intersect.Enums
 
         Event = 4,
 
+        //by rodrigo
+        //Summon = 5,
+        //end
+
     }
 
 }

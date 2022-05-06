@@ -74,6 +74,7 @@ namespace Intersect.Editor.Forms.Editors
             //Send Changed items
             foreach (var item in mChanged)
             {
+                if(this.chkIsSummon.Checked) { item.Is_Summon = true; } else { item.Is_Summon = false;  }
                 PacketSender.SendSaveObject(item);
                 item.DeleteBackup();
             }

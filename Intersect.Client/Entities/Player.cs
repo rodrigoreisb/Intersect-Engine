@@ -82,12 +82,15 @@ namespace Intersect.Client.Entities
         private Dictionary<int, long> mLastHotbarUseTime = new Dictionary<int, long>();
         private int mHotbarUseDelay = 150;
 
-        //editado por rodrigo
+        //edited by rodrigo
         public int multi_mouse_move_count = 0;
         public int multi_mouse_move_direction = -1;
         public bool multi_mouse_move_active = false;
-
         private int mouse_move_command = -10;
+
+        public int hotbar_selected = 0;
+        public bool start_hotbar_selected_spell = false;
+        //edited by rodrigo ends
 
         /// <summary>
         /// Name of our guild if we are in one.
@@ -197,6 +200,7 @@ namespace Intersect.Client.Entities
             {
                 if (this == Globals.Me && IsMoving == false)
                 {
+                    GetMouseDirection();
                     ProcessDirectionalInput();
                 }
 
@@ -892,11 +896,6 @@ namespace Intersect.Client.Entities
             var movex = 0f;
             var movey = 0f;
 
-            //editado por rodrigo
-            if (optional_cmd != -10)
-            {
-                //movex = 1;
-            }
             //end editado por rodrigo
 
             if (Interface.Interface.HasInputFocus())
@@ -948,7 +947,13 @@ namespace Intersect.Client.Entities
                 {
                     Globals.Me.MoveDir = 3;
                 }
-                mouse_move_command = Globals.Me.MoveDir;
+
+
+                //editado por rodrigo
+                    //store the value for later use
+                    Globals.Me.mouse_move_command = Globals.Me.MoveDir;
+                Globals.Me.multi_mouse_move_count = Globals.Me.multi_mouse_move_count - 1;
+
             }
 
             var castInput = -1;
@@ -961,18 +966,26 @@ namespace Intersect.Client.Entities
 
                 if (Controls.KeyDown((Control)barSlot + 9))
                 {
-                    castInput = barSlot;
+                    //castInput = barSlot;
+                    hotbar_selected = barSlot;
                 }
             }
 
-            if (castInput != -1)
-            {
-                if (0 <= castInput && castInput < Interface.Interface.GameUi?.Hotbar?.Items?.Count && mLastHotbarUseTime[castInput] < Timing.Global.Milliseconds)
+            //if (castInput != -1)
+            if (hotbar_selected > -1 && start_hotbar_selected_spell == true)
                 {
-                    Interface.Interface.GameUi?.Hotbar?.Items?[castInput]?.Activate();
-                    mLastHotbarUseTime[castInput] = Timing.Global.Milliseconds + mHotbarUseDelay;
+                //if (0 <= castInput && castInput < Interface.Interface.GameUi?.Hotbar?.Items?.Count && mLastHotbarUseTime[castInput] < Timing.Global.Milliseconds)
+
+                //stop walking to launch spell
+                multi_mouse_move_active = false; multi_mouse_move_count = 0;
+
+                if (0 <= hotbar_selected && hotbar_selected  < Interface.Interface.GameUi?.Hotbar?.Items?.Count && mLastHotbarUseTime[hotbar_selected ] < Timing.Global.Milliseconds)
+                {
+                    Interface.Interface.GameUi?.Hotbar?.Items?[hotbar_selected]?.Activate();
+                    mLastHotbarUseTime[hotbar_selected] = Timing.Global.Milliseconds + mHotbarUseDelay;
                 }
-            }  
+                start_hotbar_selected_spell = false;
+            }
         }
 
         protected int GetDistanceTo(Entity target)
@@ -998,6 +1011,35 @@ namespace Intersect.Client.Entities
             //Something is null.. return a value that is out of range :) 
             return 9999;
         }
+        /// <summary>
+        /// //////////////////////// its a copy from the above function, but instead of a target, we will try to get the distance to the clicked tile
+        /// </summary>
+        /// 
+        protected int GetDistanceToClickedTile(Entity target)
+        {
+                var myMap = MapInstance.Get(CurrentMap);
+                var targetMap = MapInstance.Get(target.CurrentMap);
+                if (myMap != null && targetMap != null)
+                {
+                    //Calculate World Tile of Me
+                    var x1 = X + myMap.MapGridX * Options.MapWidth;
+                    var y1 = Y + myMap.MapGridY * Options.MapHeight;
+
+                    //Calculate world tile of target
+                    var x2 = target.X + targetMap.MapGridX * Options.MapWidth;
+                    var y2 = target.Y + targetMap.MapGridY * Options.MapHeight;
+
+                    return (int)Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
+                }
+
+
+            //Something is null.. return a value that is out of range :) 
+            return 9999;
+        }
+
+/// <summary>
+/// ///// ends
+/// </summary>
 
         public void AutoTarget()
         {
@@ -1808,25 +1850,36 @@ namespace Intersect.Client.Entities
                         }
 
                         TryToChangeDimension();
-                        PacketSender.SendMove();
-                        MoveTimer = (Timing.Global.Ticks / TimeSpan.TicksPerMillisecond) + (long)GetMovementTime();
+
+                            PacketSender.SendMove();
+
+                        long mvtm = (long)GetMovementTime();
+
+                        MoveTimer = (Timing.Global.Ticks / TimeSpan.TicksPerMillisecond) + mvtm ;
+
                         //editado por rodrigo
-                        if(multi_mouse_move_active == true && multi_mouse_move_count > 0)
+                        //if the mouse movement is active and the movement count is greater than 0
+                        if (Globals.Me.multi_mouse_move_active == true && Globals.Me.multi_mouse_move_count > 0)
                         {
-                            HandleInput(multi_mouse_move_direction);
-                            multi_mouse_move_count--;
-                            if(multi_mouse_move_count < 1) 
-                                {
-                                    multi_mouse_move_active = false; 
-                                }
+                            //simulate another step into direction
+                            HandleInput(Globals.Me.multi_mouse_move_direction);
+                            //then decreases the steps number
+                            Globals.Me.multi_mouse_move_count = Globals.Me.multi_mouse_move_count - 1;
+                            //then if count is below 1,
+                            if (Globals.Me.multi_mouse_move_count < 1)
+                            {
+                                //deactivates the movement. NOTE: I dont know why, but sometimes the moving stops before reaching this code.
+                                Globals.Me.multi_mouse_move_active = false;
+                            }
                         }
+
                     }
                     else
                     {
                         if (MoveDir != Dir)
                         {
                             Dir = (byte) MoveDir;
-                            PacketSender.SendDirection(Dir);
+                            //PacketSender.SendDirection(Dir);
                         }
 
                         if (blockedBy != null && mLastBumpedEvent != blockedBy && blockedBy.GetType() == typeof(Event))
@@ -1982,7 +2035,7 @@ namespace Intersect.Client.Entities
             Graphics.Renderer.DrawString(
                 Guild, Graphics.EntityNameFont, (int)(x - (int)Math.Ceiling(textSize.X / 2f)), (int)y, 1,
                 Color.FromArgb(textColor.ToArgb()), true, null, Color.FromArgb(borderColor.ToArgb())
-            );
+            ); 
         }
 
         public void DrawTargets()
@@ -2092,6 +2145,103 @@ namespace Intersect.Client.Entities
                 }
             }
         }
+        //edited by rodrigo
+        /// <summary>
+        /// //// Function called to make the player turn following the mouse direction
+        /// </summary>
+        public void GetMouseDirection()
+        {
+            if(Globals.GameState == GameStates.InGame && Globals.Me != null && Interface.Interface.HasInputFocus() == false)
+            {
+                Pointf mouse;
+                byte tmp_hex;
+                //get the game window top and left
+
+                var window_width = (int)Graphics.Renderer.ActiveResolution.X;
+                var window_height = (int)Graphics.Renderer.ActiveResolution.Y;
+                var window_center_x = (int)(window_width / 2);
+                var window_center_y = (int)(window_height / 2);
+
+                //get the mouse position
+                mouse = Globals.InputManager.GetMousePosition();
+
+
+                //lets find the real mouse coordinates inside the game window
+
+                var real_mouse_x = (int)(mouse.X);
+                var real_mouse_y = (int)(mouse.Y);
+
+                int mouse_x = (int)(mouse.X / Options.TileWidth);
+                int mouse_y = (int)(mouse.Y / Options.TileHeight);
+
+                int screen_width = Graphics.Renderer.GetScreenWidth();
+
+                int player_x = (int)(Globals.Me.X);
+                int player_y = (int)(Globals.Me.Y);
+
+                //do the math to find out the mouse most probably direction
+                int dif_x = real_mouse_x - window_center_x;
+                int dif_y = real_mouse_y - window_center_y;
+
+                //ok, now we convert to positive integer to check the biggest difference, horizontal or vertical so we can decide where to move
+                var chk_x = 0; var chk_y = 0; var direction = "";
+
+                if (dif_x < 0)
+                {
+                    chk_x = (dif_x * (-1));
+                }
+                else
+                {
+                    chk_x = dif_x;
+                }
+                if (dif_y < 0)
+                {
+                    chk_y = (dif_y * (-1));
+                }
+                else
+                {
+                    chk_y = dif_y;
+                }
+
+                if (chk_x > chk_y)
+                { //horizontal movement
+                    if (real_mouse_x < window_center_x)
+                    { // move left
+                        tmp_hex = 0x02;
+                        Globals.Me.multi_mouse_move_direction = 1;
+                    }
+                    else
+                    { // move right
+                        tmp_hex = 0x03;
+                        Globals.Me.multi_mouse_move_direction = 3;
+                    }
+
+                }
+                else
+                { //vertical movement
+                    if (real_mouse_y < window_center_y)
+                    { // move up
+                        tmp_hex = 0x00;
+                        Globals.Me.multi_mouse_move_direction = 0;
+                    }
+                    else
+                    { // move down
+                        tmp_hex = 0x01;
+                        Globals.Me.multi_mouse_move_direction = 2;
+                    }
+                }
+
+                //change the player position if direction changes
+                if (Globals.Me.multi_mouse_move_direction != (int)Globals.Me.Dir)
+                {
+                    if (IsMoving == false)
+                    {
+                        Globals.Me.Dir = tmp_hex ;
+                    }
+                }
+            }
+        }
+
 
         private class TargetInfo
         {

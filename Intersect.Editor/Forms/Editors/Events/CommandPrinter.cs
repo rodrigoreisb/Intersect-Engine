@@ -1053,7 +1053,7 @@ namespace Intersect.Editor.Forms.Editors.Events
             );
         }
 
-        private static string GetCommandText(DespawnNpcCommand command, MapInstance map)
+         private static string GetCommandText(DespawnNpcCommand command, MapInstance map)
         {
             return Strings.EventCommandList.despawnnpcs;
         }

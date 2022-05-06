@@ -13,6 +13,8 @@ using Intersect.Logging;
 using Intersect.Utilities;
 using Intersect.Client.Framework.Gwen.Input;
 using Intersect.Client.MonoGame.Input;
+using Intersect.Client.Core;
+
 
 namespace Intersect.Client.Core
 {
@@ -303,7 +305,7 @@ namespace Intersect.Client.Core
                 case GameInput.MouseButtons.Left:
                     key = Keys.LButton;
                 //editado por rodrigo
-                //case GameInput.MouseButtons.Left:
+
                     if 
                         (Globals.GameState == GameStates.InGame && 
                         Globals.Me != null && 
@@ -311,57 +313,96 @@ namespace Intersect.Client.Core
                         Interface.Interface.MouseHitGui() == false &&
                         Globals.Me.TryTarget() == false)
                     {
-                        var player_x = Globals.Me.X;
-                        var player_y = Globals.Me.Y;
 
-                        var mouse_x = Math.Floor((Globals.InputManager.GetMousePosition().X + Graphics.CurrentView.Left) / Options.TileWidth);
-                        var mouse_y = Math.Floor((Globals.InputManager.GetMousePosition().Y + Graphics.CurrentView.Top) / Options.TileHeight);
+
+                        Pointf mouse;
+
+                        var window_width = (int)Graphics.Renderer.ActiveResolution.X;
+                        var window_height = (int)Graphics.Renderer.ActiveResolution.Y;
+                        var window_center_x = (int)(window_width / 2);
+                        var window_center_y = (int)(window_height / 2);
+
+                        //get the mouse position
+                        mouse = Globals.InputManager.GetMousePosition();
+
+
+                        //lets find the real mouse coordinates inside the game window
+
+                        var real_mouse_x = (int)(mouse.X);
+                        var real_mouse_y = (int)(mouse.Y);
+
+                        int mouse_x = (int)(mouse.X / Options.TileWidth);
+                        int mouse_y = (int)(mouse.Y / Options.TileHeight);
+
+                        int screen_width = Graphics.Renderer.GetScreenWidth();
+
+                        int player_x = (int)(Globals.Me.X);
+                        int player_y = (int)(Globals.Me.Y);
+
+                        int steps_to_walk = player_x - mouse_x;
+
+                        if (steps_to_walk < 0) { steps_to_walk = steps_to_walk * (-1); }
 
                         //do the math to find out the mouse most probably direction
-                        var dif_x = (int)(mouse_x - player_x);
-                        var dif_y = (int)(mouse_y - player_y);
+                        int dif_x = real_mouse_x - window_center_x;
+                        int dif_y = real_mouse_y - window_center_y;
 
                         //ok, now we convert to positive integer to check the biggest difference, horizontal or vertical so we can decide where to move
                         var chk_x = 0; var chk_y = 0; var direction = "";
 
-                        if (dif_x < 0) { chk_x = (dif_x * (-1)); } else { chk_x = dif_x; }
-                        if (dif_y < 0) { chk_y = (dif_y * (-1)); } else { chk_y = dif_y; }
+                        if (dif_x < 0) 
+                            { 
+                                chk_x = (dif_x * (-1)); 
+                            } else {
+                                chk_x = dif_x;
+                            }
+                        if (dif_y < 0) 
+                            { 
+                                chk_y = (dif_y * (-1)); 
+                            } else { 
+                                chk_y = dif_y; 
+                            }
 
                         //we clear any existing movement before setting a new one
                         //Globals.Me.multi_mouse_move_active = false;
                         Globals.Me.multi_mouse_move_count = -1;
 
-                        if (mouse_x < player_x && chk_x >= chk_y) 
-                            {
+                        if(chk_x > chk_y)
+                        { //horizontal movement
+                            if(real_mouse_x < window_center_x)
+                            { // move left
                                 direction = "left";
-                                Globals.Me.multi_mouse_move_count = chk_x -1;
                                 Globals.Me.multi_mouse_move_direction = 1;
-                            }
-                        if (mouse_x > player_x && chk_x > chk_y) 
-                            {
+                            } else
+                            { // move right
                                 direction = "right";
-                                Globals.Me.multi_mouse_move_count = chk_x -1;
                                 Globals.Me.multi_mouse_move_direction = 3;
                             }
-                        if (mouse_y < player_y && chk_x <= chk_y) 
-                            {
+
+                        } else
+                        { //vertical movement
+                            if (real_mouse_y < window_center_y)
+                            { // move up
                                 direction = "up";
-                                Globals.Me.multi_mouse_move_count = chk_y -1;
                                 Globals.Me.multi_mouse_move_direction = 0;
                             }
-                        if (mouse_y > player_y && chk_x < chk_y) 
-                            {
+                            else
+                            { // move down
                                 direction = "down";
-                                Globals.Me.multi_mouse_move_count = chk_y -1;
                                 Globals.Me.multi_mouse_move_direction = 2;
                             }
+                        }
+                        Globals.Me.multi_mouse_move_count = steps_to_walk;
+
+
+                        Globals.Me.IsMoving = true; 
                         Globals.Me.HandleInput(Globals.Me.multi_mouse_move_direction);
                         Globals.Me.multi_mouse_move_active = true;
+                        
 
                         //The commented code below shows a chat bubble with the direction and "steps". For testing purposes.
                         //PacketSender.SendChatMsg("going " + direction + " " + Globals.Me.multi_mouse_move_count.ToString() + " steps." , 0);
-
-                        Globals.Me.IsMoving = true;
+                        //PacketSender.SendChatMsg($"player:  {player_x},{player_y}  mouse: {mouse_x}, {mouse_y} real mouse: {real_mouse_x} pl-px: {real_pl_x} " , 0);
                     }
                     //fim do editado por rodrigo
 
@@ -438,6 +479,12 @@ namespace Intersect.Client.Core
             {
                 case GameInput.MouseButtons.Right:
                     key = Keys.RButton;
+                    if(Globals.Me.IsMoving == false) 
+                    {
+                        PacketSender.SendDirection((byte)Globals.Me.Dir);
+                        Globals.Me.start_hotbar_selected_spell = true;                    
+                    }
+
                     break;
 
                 case GameInput.MouseButtons.Middle:

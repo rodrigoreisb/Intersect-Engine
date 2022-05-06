@@ -30,6 +30,8 @@ namespace Intersect.GameObjects
 
         [NotMapped] public int[] VitalRegen = new int[(int) Vitals.VitalCount];
 
+        
+
         [JsonConstructor]
         public NpcBase(Guid id) : base(id)
         {
@@ -167,6 +169,15 @@ namespace Intersect.GameObjects
             set => DatabaseUtils.LoadIntArray(ref MaxVital, value, (int) Vitals.VitalCount);
         }
 
+
+        //by rodrigo, summon
+        public bool Is_Summon
+        {
+            get; set;
+        }
+        //end
+
+
         //NPC vs NPC Combat
         public bool NpcVsNpcEnabled { get; set; }
 
@@ -180,6 +191,7 @@ namespace Intersect.GameObjects
         public int SpawnDuration { get; set; }
 
         public int SpellFrequency { get; set; } = 2;
+
 
         //Spells
         [JsonIgnore]

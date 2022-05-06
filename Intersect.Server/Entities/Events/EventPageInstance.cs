@@ -323,6 +323,7 @@ namespace Intersect.Server.Entities.Events
             if (MovementType == EventMovementType.MoveRoute && MoveRoute != null)
             {
                 ProcessMoveRoute(Player, timeMs);
+                
             }
             else
             {
