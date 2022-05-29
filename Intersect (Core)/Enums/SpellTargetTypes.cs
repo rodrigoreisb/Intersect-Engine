@@ -14,7 +14,9 @@ namespace Intersect.Enums
 
         OnHit = 4,
 
-        Trap = 5
+        Trap = 5,
+
+        LongRangeAOE = 6,
 
     }
 

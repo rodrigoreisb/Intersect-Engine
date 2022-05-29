@@ -29,6 +29,8 @@ namespace Intersect.Enums
         OnHit = 11,
 
         Taunt = 12,
+        //by rodrigo
+        //Poison = 13,
 
     }
 

@@ -32,6 +32,13 @@ namespace Intersect.GameObjects
 
         public SpellTypes SpellType { get; set; }
 
+        //by rodrigo
+        [NotMapped]
+        [JsonIgnore]
+        public int SpellTargetPointX;
+        public int SpellTargetPointY;
+        //end
+
         public string Description { get; set; } = "";
 
         public string Icon { get; set; } = "";

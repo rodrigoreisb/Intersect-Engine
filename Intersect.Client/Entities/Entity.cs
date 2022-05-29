@@ -182,6 +182,13 @@ namespace Intersect.Client.Entities
 
         public byte Z;
 
+        //by rodrigo
+        public Point LongRangeSpellTarget;
+        public Point PlayerView;
+        //end
+
+
+
         public Entity(Guid id, EntityPacket packet, bool isEvent = false)
         {
             Id = id;
@@ -442,6 +449,7 @@ namespace Intersect.Client.Entities
                 Animations.Add(new Animation(anim, true, false, -1, this));
             }
         }
+
 
         public void ClearAnimations(List<Animation> anims)
         {
@@ -1691,24 +1699,27 @@ namespace Intersect.Client.Entities
             {
                 return;
             }
-
+            //by rodrigo. only draws target if control key is pressed.
+            if(Globals.IsControlKeyPressed == true)
+            { 
             var srcRectangle = new FloatRect();
             var destRectangle = new FloatRect();
             var targetTex = Globals.ContentManager.GetTexture(GameContentManager.TextureType.Misc, "target.png");
-            if (targetTex != null)
-            {
-                destRectangle.X = GetCenterPos().X - (int) targetTex.GetWidth() / 4;
-                destRectangle.Y = GetCenterPos().Y - (int) targetTex.GetHeight() / 2;
+                if (targetTex != null)
+                {
+                    destRectangle.X = GetCenterPos().X - (int)targetTex.GetWidth() / 4;
+                    destRectangle.Y = GetCenterPos().Y - (int)targetTex.GetHeight() / 2;
 
-                srcRectangle = new FloatRect(
-                    priority * (int) targetTex.GetWidth() / 2, 0, (int) targetTex.GetWidth() / 2,
-                    (int) targetTex.GetHeight()
-                );
+                    srcRectangle = new FloatRect(
+                        priority * (int)targetTex.GetWidth() / 2, 0, (int)targetTex.GetWidth() / 2,
+                        (int)targetTex.GetHeight()
+                    );
 
-                destRectangle.Width = srcRectangle.Width;
-                destRectangle.Height = srcRectangle.Height;
+                    destRectangle.Width = srcRectangle.Width;
+                    destRectangle.Height = srcRectangle.Height;
 
-                Graphics.DrawGameTexture(targetTex, srcRectangle, destRectangle, Intersect.Color.White);
+                    Graphics.DrawGameTexture(targetTex, srcRectangle, destRectangle, Intersect.Color.White);
+                }
             }
         }
 

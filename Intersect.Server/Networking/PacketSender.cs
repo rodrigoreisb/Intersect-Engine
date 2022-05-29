@@ -1428,11 +1428,11 @@ namespace Intersect.Server.Networking
             {
                 if (Options.Instance.Packets.BatchAnimationPackets)
                 {
-                    map.AddBatchedAnimation(new PlayAnimationPacket(animId, targetType, entityId, mapId, x, y, direction));
+                    map.AddBatchedAnimation(new PlayAnimationPacket(animId, targetType, entityId, mapId, (int)x , (int)y, direction));
                 }
                 else
                 {
-                    SendDataToProximity(mapId, new PlayAnimationPacket(animId, targetType, entityId, mapId, x, y, direction), null, TransmissionMode.Any);
+                    SendDataToProximity(mapId, new PlayAnimationPacket(animId, targetType, entityId, mapId, (int)x, (int)y, direction), null, TransmissionMode.Any);
                 }
             }
         }

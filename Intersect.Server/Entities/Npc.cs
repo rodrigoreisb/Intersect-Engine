@@ -199,18 +199,20 @@ namespace Intersect.Server.Entities
 
             // Are we resetting? If so, do not allow for a new target.
             var pathTarget = mPathFinder?.GetTarget();
-            if (AggroCenterMap != null && pathTarget != null &&
-                pathTarget.TargetMapId == AggroCenterMap.Id && pathTarget.TargetX == AggroCenterX && pathTarget.TargetY == AggroCenterY)
+            if (AggroCenterMap != null && pathTarget != null)
             {
-                if (en == null)
+                if (pathTarget.TargetMapId == AggroCenterMap.Id && pathTarget.TargetX == AggroCenterX && pathTarget.TargetY == AggroCenterY)
                 {
-                                    return;
+                    if (en == null)
+                    {
+                        return;
 
-                }
-                else
-                {
-                    return;
+                    }
+                    else
+                    {
+                        return;
 
+                    }
                 }
             }
 
@@ -250,13 +252,17 @@ namespace Intersect.Server.Entities
                         }
                     }
 
+                    //if the entity is a player
                     if (en.GetType() == typeof(Player))
                     {
                         //TODO Make sure that the npc can target the player
+                        //if the entity is not the self npc and if the target isnt stealth
                         if (this != en && !TargetHasStealth(en))
                         {
-                            if (this.is_entity_summon != true && en.Id != summoner_player_entity.Id )
+                            //if the npc is not a player summon. TO DO: MAKE IT ATTACK ANY PLAYER IN SUMMONER HOSTILITY
+                            if (this.is_entity_summon == false) // && en.Id != en.summoner_player_entity.Id )
                             {
+                                //it can target the player
                                 Target = en;
                             }
                             

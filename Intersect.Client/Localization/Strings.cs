@@ -508,6 +508,8 @@ namespace Intersect.Client.Localization
 
             public static LocalizedString stat5 = @"Vitality";
 
+            public static LocalizedString stat6 = @"Inteligence";
+
             public static LocalizedString targetoutsiderange = @"Target too far away!";
 
             public static LocalizedString vital0 = @"Health";
@@ -962,7 +964,9 @@ namespace Intersect.Client.Localization
                 {1, @"Ability Power: {00}"},
                 {2, @"Defense: {00}"},
                 {3, @"Magic Resist: {00}"},
-                {4, @"Speed: {00}"}
+                {4, @"Speed: {00}"},
+                {5, @"Vitality: {00}"},
+                {6, @"Inteligence: {00}"}
             };
 
             public static LocalizedString twohand = @"2H";
@@ -1525,7 +1529,9 @@ namespace Intersect.Client.Localization
                 {1, @"Ability Power: {00}"},
                 {2, @"Defense: {00}"},
                 {3, @"Magic Resist: {00}"},
-                {4, @"Speed: {00}"}
+                {4, @"Speed: {00}"},
+                {5, @"Vitality: {00}"},
+                {6, @"Inteligence: {00}"}
             };
 
             public static Dictionary<int, LocalizedString> targettypes = new Dictionary<int, LocalizedString>
@@ -1536,6 +1542,7 @@ namespace Intersect.Client.Localization
                 {3, @"Projectile - Range: {00} Tiles"},
                 {4, @"On Hit"},
                 {5, @"Trap"},
+                {6, @"Long Range AoE"},
             };
 
             public static Dictionary<int, LocalizedString> vitals = new Dictionary<int, LocalizedString>

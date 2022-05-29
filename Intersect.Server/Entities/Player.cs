@@ -883,13 +883,20 @@ namespace Intersect.Server.Entities
             }
 
             var baseVital = classVital;
-
+//by rodrigo
             if (vital == (int)Vitals.Health)
             {
                 int[] stat_values = GetStatValues();
                 int stat_vitality = stat_values[5];
-                classVital = classVital + stat_vitality; //<---------- vitality add
+                classVital = classVital + stat_vitality * 10; //<---------- vitality add HP
             }
+            if (vital == (int)Vitals.Mana)
+            {
+                int[] stat_values = GetStatValues();
+                int stat_inteligence = stat_values[6];
+                classVital = classVital + stat_inteligence * 10; //<---------- inteligence add Mana
+            }
+//ends
 
             // TODO: Alternate implementation for the loop
             //            classVital += Equipment?.Select(equipment => ItemBase.Get(Items.ElementAt(equipment)?.ItemId ?? Guid.Empty))
@@ -4392,11 +4399,15 @@ namespace Intersect.Server.Entities
             return true;
         }
 
-        public void UseSpell(int spellSlot, Entity target)
+        public void UseSpell(int spellSlot, Entity target, int LongRangeAoE_x = 0, int LongRangeAoE_y = 0 )
         {
             var spellNum = Spells[spellSlot].SpellId;
             Target = target;
             var spell = SpellBase.Get(spellNum);
+
+            spell.SpellTargetPointX = LongRangeAoE_x;
+            spell.SpellTargetPointY = LongRangeAoE_y;
+            
             if (spell == null)
             {
                 return;
@@ -4440,9 +4451,28 @@ namespace Intersect.Server.Entities
 
                     if (spell.CastAnimationId != Guid.Empty)
                     {
-                        PacketSender.SendAnimationToProximity(
-                            spell.CastAnimationId, 1, base.Id, MapId, 0, 0, (sbyte) Dir
-                        ); //Target Type 1 will be global entity
+                        //by rodrigo
+                        if (spell.Combat.TargetType == SpellTargetTypes.LongRangeAOE)
+                        {
+
+                            clsMapAndTiles MapAndTiles = GetMapAndTilesFromWorldCoords(MapId, spell.SpellTargetPointX, spell.SpellTargetPointY);
+
+                            Guid ani_map = MapAndTiles.MapID;
+                            int tile_x = MapAndTiles.TileX;
+                            int tile_y = MapAndTiles.TileY;
+
+                            PacketSender.SendAnimationToProximity(
+                                spell.CastAnimationId, 6, base.Id, ani_map, (byte)tile_x , (byte)tile_y, (sbyte)Dir
+                                );
+                        }
+                        else
+                        {
+                            //Target Type 1 will be global entity
+                            //end. original below
+                            PacketSender.SendAnimationToProximity(
+                                spell.CastAnimationId, 1, base.Id, MapId, 0, 0, (sbyte)Dir
+                            ); //Target Type 1 will be global entity
+                        }
                     }
 
                     //Check if cast should be instance

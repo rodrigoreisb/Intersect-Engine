@@ -427,9 +427,9 @@ namespace Intersect.Editor.Forms.Editors
                     nudHitRadius.Value = mEditorItem.Combat.HitRadius;
                 }
             }
-
-            if (cmbTargetType.SelectedIndex == (int) SpellTargetTypes.AoE &&
-                cmbType.SelectedIndex == (int) SpellTypes.CombatSpell)
+            //comment by rodrigo. adapt these for long range AOE type, including spell maximum range
+            if (cmbTargetType.SelectedIndex == (int) SpellTargetTypes.AoE && cmbType.SelectedIndex == (int)SpellTypes.CombatSpell || 
+                cmbTargetType.SelectedIndex == (int)SpellTargetTypes.LongRangeAOE && cmbType.SelectedIndex == (int) SpellTypes.CombatSpell)
             {
                 lblHitRadius.Show();
                 nudHitRadius.Show();

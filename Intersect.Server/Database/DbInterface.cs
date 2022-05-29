@@ -72,7 +72,7 @@ namespace Intersect.Server.Database
 
         public static ConcurrentDictionary<Guid, ServerVariableBase> UpdatedServerVariables = new ConcurrentDictionary<Guid, ServerVariableBase>();
 
-        private static List<MapGrid> mapGrids = new List<MapGrid>();
+        public static List<MapGrid> mapGrids = new List<MapGrid>();
 
         public static long RegisteredPlayers
         {

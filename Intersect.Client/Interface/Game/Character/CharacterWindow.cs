@@ -60,6 +60,10 @@ namespace Intersect.Client.Interface.Game.Character
         //rodrigo
         Label mAddVitalityLabel;
         Button mAddVitalityBtn;
+
+        Label mAddInteligenceLabel;
+        Button mAddInteligenceBtn;
+
         // ends
 
         Label mPointsLabel;
@@ -133,6 +137,11 @@ namespace Intersect.Client.Interface.Game.Character
             mAddVitalityBtn = new Button(mCharacterWindow, "IncreaseVitalityButton");
             mAddVitalityBtn.Clicked += _addVitalityBtn_Clicked;
 
+            mAddInteligenceLabel = new Label(mCharacterWindow, "InteligenceLabel");
+            mAddInteligenceBtn = new Button(mCharacterWindow, "IncreaseInteligenceButton");
+            mAddInteligenceBtn.Clicked += _addInteligenceBtn_Clicked;
+
+
             //ends
             mPointsLabel = new Label(mCharacterWindow, "PointsLabel");
 
@@ -175,6 +184,10 @@ namespace Intersect.Client.Interface.Game.Character
         void _addVitalityBtn_Clicked(Base sender, ClickedEventArgs arguments)
         {
             PacketSender.SendUpgradeStat((int)Stats.Vitality);
+        }
+        void _addInteligenceBtn_Clicked(Base sender, ClickedEventArgs arguments)
+        {
+            PacketSender.SendUpgradeStat((int)Stats.Inteligence);
         }
         //ends
 
@@ -322,6 +335,11 @@ namespace Intersect.Client.Interface.Game.Character
              mAddVitalityLabel.SetText(
                 Strings.Character.stat3.ToString(Strings.Combat.stat5, Globals.Me.Stat[(int)Stats.Vitality])
             );
+
+            mAddInteligenceLabel.SetText(
+               Strings.Character.stat3.ToString(Strings.Combat.stat6, Globals.Me.Stat[(int)Stats.Inteligence])
+           );
+
             //end
 
             mPointsLabel.SetText(Strings.Character.points.ToString(Globals.Me.StatPoints));
@@ -342,6 +360,10 @@ namespace Intersect.Client.Interface.Game.Character
 
             mAddVitalityBtn.IsHidden =
                 Globals.Me.StatPoints == 0 || Globals.Me.Stat[(int)Stats.Vitality] == Options.MaxStatValue;
+
+            mAddInteligenceBtn.IsHidden =
+                Globals.Me.StatPoints == 0 || Globals.Me.Stat[(int)Stats.Inteligence] == Options.MaxStatValue;
+
 
             for (var i = 0; i < Options.EquipmentSlots.Count; i++)
             {

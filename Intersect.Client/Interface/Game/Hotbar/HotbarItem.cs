@@ -19,6 +19,12 @@ namespace Intersect.Client.Interface.Game.Hotbar
 
     public class HotbarItem
     {
+        //by rodrigo
+        //set the image texture for the hotbar selected item
+        public string hotbar_selected_image = "click_marker_left.png";
+
+        public bool Is_Selected = false;
+        //end
 
         private static int sItemXPadding = 4;
 
@@ -41,6 +47,10 @@ namespace Intersect.Client.Interface.Game.Hotbar
         private ImagePanel mContentPanel;
 
         private Label mCooldownLabel;
+
+        //by rodrigo
+        private Label mSelectedLabel;
+        //
 
         //Item Info
         private Guid mCurrentId = Guid.Empty;
@@ -108,10 +118,19 @@ namespace Intersect.Client.Interface.Game.Hotbar
             mCooldownLabel = new Label(Pnl, "HotbarCooldownLabel" + mYindex);
             mCooldownLabel.IsHidden = true;
             mCooldownLabel.TextColor = new Color(0, 255, 255, 255);
+
+            //by rodrigo
+            mSelectedLabel = new Label(Pnl, "HotbarCooldownLabel" + mYindex);
+            mSelectedLabel.Text = "S";
+            mSelectedLabel.IsHidden = true;
+            mSelectedLabel.TextColor = new Color(0, 255, 0, 0);
+            mSelectedLabel.SetTextColor(mSelectedLabel.TextColor, Label.ControlState.Normal);
+            //end
         }
 
         public void Activate()
         {
+
             if (mCurrentId != Guid.Empty)
             {
                 if (mCurrentItem != null)
@@ -218,6 +237,18 @@ namespace Intersect.Client.Interface.Game.Hotbar
             {
                 return;
             }
+
+            //by rodrigo
+            if (Is_Selected == true)
+            {
+                mSelectedLabel.IsHidden = false;
+            }
+            else
+            {
+                mSelectedLabel.IsHidden = true;
+            }
+            //end
+
 
             //See if Label Should be changed
             if (mHotKey != Controls.ActiveControls.ControlMapping[Control.Hotkey1 + mYindex].Key1)
@@ -384,6 +415,10 @@ namespace Intersect.Client.Interface.Game.Hotbar
                     EquipPanel.IsHidden = true;
                     EquipLabel.IsHidden = true;
                     mCooldownLabel.IsHidden = true;
+                    //by rodrigo
+                    mSelectedLabel.IsHidden = true;
+                    //end
+
                     if (mSpellBookItem != null)
                     {
                         mIsFaded = Globals.Me.GetSpellCooldown(mSpellBookItem.SpellId) > Globals.System.GetTimeMs();
@@ -423,6 +458,9 @@ namespace Intersect.Client.Interface.Game.Hotbar
                     EquipPanel.IsHidden = true;
                     EquipLabel.IsHidden = true;
                     mCooldownLabel.IsHidden = true;
+                    //by rodrigo
+                    mSelectedLabel.IsHidden = true;
+                    //end
                 }
 
                 if (mIsFaded)

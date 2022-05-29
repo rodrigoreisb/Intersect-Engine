@@ -827,7 +827,9 @@ namespace Intersect.Editor.Forms.Editors
             "AOE",
             "Linear (projectile)",
             "On Hit",
-            "Trap"});
+            "Trap",
+            "LongRangeAOE"
+            });
             this.cmbTargetType.Location = new System.Drawing.Point(9, 32);
             this.cmbTargetType.Name = "cmbTargetType";
             this.cmbTargetType.Size = new System.Drawing.Size(206, 21);

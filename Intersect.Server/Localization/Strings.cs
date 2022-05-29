@@ -319,7 +319,9 @@ namespace Intersect.Server.Localization
                     {1, @"Ability Power"},
                     {2, @"Defense"},
                     {3, @"Magic Resist"},
-                    {4, @"Speed"}
+                    {4, @"Speed"},
+                    {5, @"Vitality"},
+                    {6, @"Inteligence"}
                 }
             );
 

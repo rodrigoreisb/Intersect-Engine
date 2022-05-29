@@ -27,6 +27,13 @@ using Newtonsoft.Json;
 namespace Intersect.Server.Entities
 {
 
+    public class clsMapAndTiles
+    {
+        public Guid MapID;
+        public int TileX;
+        public int TileY;
+    }
+
     public partial class Entity : IDisposable
     {
 
@@ -38,8 +45,10 @@ namespace Intersect.Server.Entities
         /// </summary>
         public bool is_entity_summon = false; //<---- tells us if the entity is a summon
         public Player summoner_player_entity;
+        public Point long_range_spell_target ;
+        public Point player_view;
         ///// edited by rodrigo ends
-///
+        ///
         [JsonProperty("MaxVitals"), NotMapped] private int[] _maxVital = new int[(int) Vitals.VitalCount];
 
         [NotMapped, JsonIgnore] public Stat[] Stat = new Stat[(int) Stats.StatCount];
@@ -1382,7 +1391,7 @@ namespace Intersect.Server.Entities
                 var s = projectile.Spell;
                 if (s != null)
                 {
-                    HandleAoESpell(projectile.SpellId, s.Combat.HitRadius, target.MapId, target.X, target.Y, null);
+                    HandleAoESpell(projectile.SpellId, s.Combat.HitRadius, target.MapId, target.X, target.Y, null, target.player_view.X, target.player_view.Y );
                 }
 
                 //Check that the npc has not been destroyed by the splash spell
@@ -1926,11 +1935,11 @@ namespace Intersect.Server.Entities
             }
         }
 
-        // important for summon pet / monster helper processing
+        //by rodrigo. important for summon pet / monster helper processing
         public virtual void KilledEntity(Entity entity)
         {
 
-            PacketSender.SendChatBubble(this.Id, this.GetEntityType(), "npc killed.", this.MapId);
+            //PacketSender.SendChatBubble(this.Id, this.GetEntityType(), "npc killed.", this.MapId);
 
             //here is a copy of server/Player.cs function KilledEntity
             switch (entity)
@@ -2058,6 +2067,24 @@ namespace Intersect.Server.Entities
                             HandleAoESpell(spellId, spellBase.Combat.HitRadius, MapId, X, Y, null);
 
                             break;
+                        //by rodrigo
+                        case SpellTargetTypes.LongRangeAOE:
+
+                            clsMapAndTiles MapAndTiles = GetMapAndTilesFromWorldCoords(MapId, long_range_spell_target.X, long_range_spell_target.Y);
+
+                            Guid ani_map = MapAndTiles.MapID;
+                            int tile_x = MapAndTiles.TileX;
+                            int tile_y = MapAndTiles.TileY;
+
+                            PacketSender.SendAnimationToProximity(spellBase.HitAnimationId, 6, Id, ani_map, (byte)tile_x, (byte)tile_y, (sbyte)Dir);
+
+                            //HandleAoESpell(spellId, spellBase.Combat.HitRadius, MapId, long_range_spell_target.X, long_range_spell_target.Y, null, player_view.X, player_view.Y);
+                            
+                            HandleAoESpell(spellId, spellBase.Combat.HitRadius, ani_map, tile_x, tile_y, null, player_view.X, player_view.Y);
+
+                            break;
+
+                        //end
                         case SpellTargetTypes.Projectile:
                             var projectileBase = spellBase.Combat.Projectile;
                             if (projectileBase != null)
@@ -2151,7 +2178,8 @@ namespace Intersect.Server.Entities
             Guid startMapId,
             int startX,
             int startY,
-            Entity spellTarget
+            Entity spellTarget,
+            int view_left = 0, int view_top = 0
         )
         {
             var spellBase = SpellBase.Get(spellId);
@@ -2169,7 +2197,8 @@ namespace Intersect.Server.Entities
                             {
                                 if (spellTarget == null || spellTarget == entity)
                                 {
-                                    if (entity.GetDistanceTo(startMap,startX,startY) <= range)
+                                    var e_dist = entity.GetDistanceTo(startMap, startX, startY); 
+                                    if (e_dist <= range)
                                     {
                                         //Check to handle a warp to spell
                                         if (spellBase.SpellType == SpellTypes.WarpTo)
@@ -2182,15 +2211,70 @@ namespace Intersect.Server.Entities
                                                 ChangeDir(DirToEnemy(spellTarget));
                                             }
                                         }
-
                                         TryAttack(entity, spellBase); //Handle damage
                                     }
+
+                                    //by rodrigo
+                                    //if the spell attack type is long-range aoe, make the calculations to find out if the targets are near the area
+                                    Point ent_pos = ConvertToClientWorldPoint(entity.X, entity.Y, view_left, view_top);
+
+                                    var gx_l = DbInterface.mapGrids[0].MyGrid.GetLength(0); //<--- get the first mapgrid index (x)
+                                    var gy_l = DbInterface.mapGrids[0].MyGrid.GetLength(1); //<--- get the second mapgrid index (y)
+                                    var ent_map_x = 0;
+                                    var ent_map_y = 0;
+                                    //now we have to get the mapgrind index to the entity map
+                                    for (var ix = 0; ix < gx_l; ix++)
+                                    {
+                                        for (var iy = 0; iy < gy_l; iy++)
+                                        {
+                                            if(DbInterface.mapGrids[0].MyGrid[ix, iy] == entity.MapId )
+                                            {
+                                                //store the values within the map grid
+                                                ent_map_x = ix;
+                                                ent_map_y = iy;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (entity.Id != this.Id)
+                                    {
+
+
+                                        //now we convert to world tile
+                                        var ent_pos_x = (ent_map_x * Options.TileWidth) + entity.X;
+                                        var ent_pos_y = (ent_map_y * Options.TileHeight) + entity.Y;
+
+                                        //get the distance difference between spell center area and entity position
+                                        var dif_x = ent_pos_x - startX;
+                                        var dif_y = ent_pos_y - startY;
+                                        //we transform the difference into positive numbers so we should only compare to positive distances
+                                        var negative_range = range * (-1);
+
+                                        //var x_dif = startX - Server.Maps.MapGrid ;
+                                        //Console.WriteLine($"startx: {startX} - ent_pos_x: {ent_pos_x}", 0);
+                                        //attack only if the entity is within the range
+
+                                        if ( dif_x >= negative_range && dif_x <= range && dif_y >= negative_range &&  dif_y <= range)
+                                        {
+                                            TryAttack(entity, spellBase); //Handle damage
+                                        }
+                                    }
+                                   
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+
+        public Point ConvertToClientWorldPoint(int windowX, int windowY, int viewLeft, int viewTop)
+        {
+            Point tmp = new Point();
+            tmp.X = windowX + viewLeft;
+            tmp.Y = windowY + viewTop;
+            return tmp;
         }
 
         private int[] GetPositionNearTarget(Guid mapId, int x, int y)
@@ -2723,6 +2807,40 @@ namespace Intersect.Server.Entities
 
         #endregion
 
+
+
+        public clsMapAndTiles GetMapAndTilesFromWorldCoords(Guid map_id, int world_tile_x, int world_tile_y)
+        {
+            clsMapAndTiles return_stuff = new clsMapAndTiles();
+
+            //lets make the calculations to get back the map and coords to show the animation (that could be passed with the client packet too)
+            int maptiles_x = Options.MapWidth;
+            int maptiles_y = Options.MapHeight;
+
+            //we get the map index coords inside the grid first
+            var map_index_x = (int)Math.Floor((decimal)world_tile_x / maptiles_x);
+            var map_index_y = (int)Math.Floor((decimal)world_tile_y / maptiles_y);
+
+            //by now we have the grid coords, lets get the map id
+            //first we get the same grid id 
+            var mapinst = MapInstance.Get(map_id);
+            var gridId = mapinst.MapGrid;
+            var grid = DbInterface.GetGrid(gridId);
+
+            //now we get the map id where the animation will roll
+            Guid ani_map_id = grid.MyGrid[map_index_x, map_index_y];
+
+            //so now, we gotta find in wich tile coords it will play, so we subtract the word number
+            var ani_tile_x = (int)long_range_spell_target.X - (map_index_x * Options.MapWidth); //
+            var ani_tile_y = (int)long_range_spell_target.Y - (map_index_y * Options.MapHeight);
+
+            return_stuff.MapID = ani_map_id;
+            return_stuff.TileX = ani_tile_x;
+            return_stuff.TileY = ani_tile_y;
+
+            return return_stuff;
+
+        }
     }
 
 }

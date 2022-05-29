@@ -11,7 +11,6 @@ using Intersect.Client.Localization;
 
 namespace Intersect.Client.Interface.Game.Hotbar
 {
-
     public class HotBarWindow
     {
 
@@ -65,7 +64,17 @@ namespace Intersect.Client.Interface.Game.Hotbar
 
             for (var i = 0; i < Options.MaxHotbar; i++)
             {
+                //by rodrigo
+                if(i == Globals.Me.hotbar_selected)
+                {
+                    Items[i].Is_Selected = true;
+                } else
+                {
+                    Items[i].Is_Selected = false;
+                }
+                //end
                 Items[i].Update();
+                
             }
         }
 

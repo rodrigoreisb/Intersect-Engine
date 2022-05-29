@@ -980,6 +980,8 @@ Tick timer saved in server config.json.";
                 {2, @"Defense"},
                 {3, @"Magic Resist"},
                 {4, @"Speed"},
+                {5, @"Vitality"},
+                {6, @"Inteligence"},
             };
 
             public static Dictionary<int, LocalizedString> vitals = new Dictionary<int, LocalizedString>
@@ -4614,7 +4616,8 @@ Tick timer saved in server config.json.";
                 {2, @"AOE"},
                 {3, @"Linear (projectile)"},
                 {4, @"On Hit"},
-                {5, @"Trap"}
+                {5, @"Trap"},
+                {6, @"Long Range AoE"}
             };
 
             public static LocalizedString title = @"Spell Editor";

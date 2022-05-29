@@ -1356,13 +1356,24 @@ namespace Intersect.Client.Networking
             var animId = packet.AnimationId;
             var targetType = packet.TargetType;
             var entityId = packet.EntityId;
-            if (targetType == -1)
+            if (targetType == 1)
             {
                 var map = MapInstance.Get(mapId);
                 if (map != null)
                 {
                     map.AddTileAnimation(animId, packet.X, packet.Y, packet.Direction);
                 }
+            }
+            else if (targetType == 6) //<--- long rang AoE
+            {
+                var map = MapInstance.Get(mapId);
+                if (map != null)
+                {
+                    //still receiving world tile positions. lets check
+
+                    map.AddTileAnimation(animId, packet.X, packet.Y, packet.Direction);
+                }
+
             }
             else if (targetType == 1)
             {
@@ -1416,6 +1427,73 @@ namespace Intersect.Client.Networking
                 }
             }
         }
+
+        //by rodrigo. cópia da função acima para mostrar animação de clique de mouse
+     /*   public void ShowClickAnimation(Guid mapId, Guid animId, int targetType, Guid entityId, int ani_x, int ani_y, int ani_dir = -1)
+        {
+
+           // if (targetType == -1)
+           // {
+                var map = MapInstance.Get(mapId);
+                if (map != null)
+                {
+                    map.AddTileAnimation(animId, ani_x, ani_y, ani_dir);
+                }
+            //}
+            /*else if (targetType == 1)
+            {
+                if (Globals.Entities.ContainsKey(entityId))
+                {
+                    if (Globals.Entities[entityId] != null && !Globals.EntitiesToDispose.Contains(entityId))
+                    {
+                        var animBase = AnimationBase.Get(animId);
+                        if (animBase != null)
+                        {
+                            var animInstance = new Animation(
+                                animBase, false, ani_dir != -1, -1, Globals.Entities[entityId]
+                            );
+
+                            if (ani_dir > -1)
+                            {
+                                animInstance.SetDir(ani_dir);
+                            }
+
+                            Globals.Entities[entityId].Animations.Add(animInstance);
+                        }
+                    }
+                }
+            }
+            else if (targetType == 2)
+            {
+                var map = MapInstance.Get(mapId);
+                if (map != null)
+                {
+                    if (map.LocalEntities.ContainsKey(entityId))
+                    {
+                        if (map.LocalEntities[entityId] != null)
+                        {
+                            var animBase = AnimationBase.Get(animId);
+                            if (animBase != null)
+                            {
+                                var animInstance = new Animation(
+                                    animBase, false, ani_dir == -1, -1,
+                                    map.LocalEntities[entityId]
+                                );
+
+                                if (ani_dir > -1)
+                                {
+                                    animInstance.SetDir(ani_dir);
+                                }
+
+                                map.LocalEntities[entityId].Animations.Add(animInstance);
+                            }
+                        }
+                    }
+                }
+            } } */
+       
+
+        //end
 
         //HoldPlayerPacket
         public void HandlePacket(IPacketSender packetSender, HoldPlayerPacket packet)

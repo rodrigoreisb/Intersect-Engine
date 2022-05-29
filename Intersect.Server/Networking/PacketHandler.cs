@@ -1730,6 +1730,12 @@ namespace Intersect.Server.Networking
                 return;
             }
 
+            player.long_range_spell_target.X = packet.targetX;
+            player.long_range_spell_target.Y = packet.targetY;
+            player.player_view.X = packet.viewTop;
+            player.player_view.Y = packet.viewLeft;
+
+
             var casted = false;
 
             if (packet.TargetId != Guid.Empty)
@@ -1751,7 +1757,8 @@ namespace Intersect.Server.Networking
 
             if (!casted)
             {
-                player.UseSpell(packet.Slot, null);
+
+                player.UseSpell(packet.Slot, null, packet.targetX, packet.targetY );
             }
         }
 

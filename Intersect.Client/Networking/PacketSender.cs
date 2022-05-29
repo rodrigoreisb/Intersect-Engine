@@ -141,9 +141,18 @@ namespace Intersect.Client.Networking
             Network.SendPacket(new ForgetSpellPacket(slot));
         }
 
-        public static void SendUseSpell(int slot, Guid targetId)
+        public static void SendUseSpell(int slot, Guid targetId, int SpellX = 0, int SpellY = 0, int playerViewLeft = 0, int playerViewTop = 0)
         {
-            Network.SendPacket(new UseSpellPacket(slot, targetId));
+            //by rodrigo. send target coordinates in case spell is long-range type
+            var aUseSpell = new UseSpellPacket(slot, targetId);
+            aUseSpell.targetX = SpellX;
+            aUseSpell.targetY = SpellY;
+            aUseSpell.viewLeft = playerViewLeft;
+            aUseSpell.viewTop = playerViewTop;
+
+            Network.SendPacket(aUseSpell);
+            //end. original below
+            //Network.SendPacket(new UseSpellPacket(slot, targetId));
         }
 
         public static void SendUnequipItem(int slot)

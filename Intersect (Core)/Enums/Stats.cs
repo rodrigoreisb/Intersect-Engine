@@ -16,6 +16,8 @@ namespace Intersect.Enums
 
         Vitality,
 
+        Inteligence,
+
         StatCount
 
     }
